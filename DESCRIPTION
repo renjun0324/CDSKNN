@@ -1,6 +1,6 @@
 Package: KKLClustering
 Type: Package
-Title: Large-scale single-cell clustering algorithm based on K-means and optimal graph structure
+Title: Large-scale single-cell clustering algorithm based on K-means and optimal KNN graph structure
 Version: 0.2.0
 Author: Ren Jun
 Maintainer: RenJun <renjun0324@hotmail.com>

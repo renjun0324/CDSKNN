@@ -1,0 +1,150 @@
+---
+title: "Running KKLClustering"
+subtitle: "Large-scale single-cell clustering algorithm based on K-means and optimal graph structure"
+author: "Ren Jun | renjun0324@hotmail.com"
+date: "Vignette built on `r format(Sys.time())` with KKLClustering version `r packageVersion('KKLClustering')`. "
+output: rmarkdown::pdf_document
+bibliography: ref.bib
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## KKLClustering Workflow
+
+In order to find the best clustering result while increasing the computing speed, we designed an algorithm process that combines outlier detection based on region division and louvain clustering based on random sampling. After obtaining the original data, a certain percentage of genes can be screened. Of course, we also encourage the use of principal component analysis (PCA) results for the follow-up process. 
+
+## Test Data
+In order to get started quickly, we provide a small public data set GSE60361[@lake2017comparative], which including count matrix with 2844 cell * 18877 gene and cell type labels.
+```{r fig.show='hold', warning=FALSE, paged.print=TRUE}
+suppressMessages(library(KKLClustering))
+
+data(count)
+knitr::kable(as.matrix(count)[1:5,1:3])
+
+data(cellinfo)
+knitr::kable(head(cellinfo,3))
+
+```
+
+## Data Preprocessing
+We use Seurat[@butler2018integrating; @satija2015spatial] for standard filtering, and the detailed process can refer to
+([seurat workflow](https://twitter.com/hadleywickham/status/504368538874703872))
+
+```{r fig.align='center', fig.height=3, fig.show='asis', fig.width=6, warning=FALSE}
+suppressMessages(library(Seurat))
+suppressMessages(library(ggplot2))
+suppressMessages(library(ggsci))
+
+setwd("~/KKLClustering/test")
+
+load("s.rda")
+load("outlier_df.rda")
+load("result.rda")
+```
+
+```{r eval = FALSE, echo=TRUE, fig.align='center', fig.height=3, fig.show='asis', fig.width=5, warning=FALSE}
+s <- CreateSeuratObject(count, min.cells = 200, min.features = 3, meta.data = cellinfo)
+s <- PercentageFeatureSet(s, pattern = "^Mt", col.name = "percent.mt")
+s <- SCTransform(s, variable.features.n = 2000, verbose = FALSE)
+
+s <- RunPCA(s, features = VariableFeatures(object = s), npcs = 30, verbose = FALSE)
+pca.c <- pcaMarchenkoPastur(M = length(VariableFeatures(s)),
+                            N = ncol(s),
+                            pca.sdev = s@reductions$pca@stdev,
+                            factor = 1)
+
+s <- RunTSNE(s, reduction = "pca", dims = which(pca.c), verbose = FALSE)
+s <- RunUMAP(s, reduction = "pca", dims = which(pca.c), verbose = FALSE)
+```
+
+```{r fig.align='center', fig.show='asis', fig.width=5, fig.height=3, warning=FALSE}
+Idents(s) <- "s"
+VlnPlot(object = s, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"))
+FeatureScatter(s, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
+
+top10 <- head(x = VariableFeatures(s), 10)
+plot1 <- VariableFeaturePlot(s)
+LabelPoints(plot = plot1, points = top10, repel = TRUE)
+
+Idents(s) <- s[["celltype"]]
+DimPlot(s, reduction = "tsne")
+DimPlot(s, reduction = "umap")
+```
+
+## The downsampling method based on K-means region division
+```{r eval=FALSE, fig.align='center', fig.show='hold', warning=FALSE, include=FALSE, paged.print=TRUE}
+pca_result <- s@reductions$pca@cell.embeddings
+outlier_kmeans = OutlierKmeans(dataMatrix = pca_result,
+                               outlier_q = 0.1,
+                               down_n = 300,
+                               cores = 1,
+                               seed = 723)
+outlier_df = data.frame(row.names = rownames(s@meta.data),
+                        s@reductions$tsne@cell.embeddings,
+                        cluster = outlier_kmeans$ds_kmeans$cluster,
+                        outlier = "grey")
+outlier_df[unlist(outlier_kmeans$outlier),"outlier"] = "red"
+
+```
+
+```{r fig.align='center', fig.show='hold', fig.width=5, fig.height=5, warning=FALSE, paged.print=TRUE}
+df2 <- outlier_df %>% dplyr::filter(cluster %in% c(2,3,40,212))
+ggplot(df2, aes(x = tSNE_1, y = tSNE_2, color = I(outlier))) + 
+  geom_point(size = 2.3) + 
+  facet_wrap(~cluster, scales = "free") +
+  labs(title = "Location of outliers in multiple regions") + 
+  theme_bw()
+```
+
+## The Louvain algorithm based on the optimal KNN graph structure
+The R package Clustercrit[@desgraupes2013clustering] provides a variety of clustering evaluation indicators, we can choose any one to evaluate different clustering results, so as to select the most KNN graph structure.
+If the number of K-means area divisions is less than 500, Davies_Bouldin has a good evaluation effect; otherwise, Calinski_Harabasz can be selected.
+```{r eval = FALSE, echo=TRUE, fig.height=5, fig.show='hold', fig.width=5, warning=FALSE, include=FALSE, paged.print=TRUE}
+sampling_result = SamplingLouvain(dataMatrix = pca_result,
+                                  outlier_kmeans = outlier_kmeans,
+                                  knn_range = 5:70,
+                                  iter = 100,
+                                  int_index = c("Davies_Bouldin","Calinski_Harabasz"),
+                                  cores = 10,
+                                  seed = 723)
+new_louvain = NewLouvain(sampling_result = sampling_result,
+                         outlier_kmeans = outlier_kmeans,
+                         index = "Davies_Bouldin",
+                         cores = 1)
+result = data.frame(row.names = rownames(new_louvain$cluster_meta),
+                    name = rownames(new_louvain$cluster_meta),
+                    cluster = as.factor(new_louvain$cluster_meta$cluster),
+                    celltype = s[["celltype"]],
+                    s@reductions$umap@cell.embeddings,
+                    s@reductions$tsne@cell.embeddings,
+                    stringsAsFactors = FALSE)
+```
+
+```{r fig.show='asis', fig.align='center', fig.width=4.5, fig.height=4, warning=FALSE, paged.print=TRUE}
+
+library(aricode)
+ARI(result$cluster, result$celltype)
+
+ggplot(result, aes(x = tSNE_1, y = tSNE_2, color = cluster)) + 
+  geom_point(size = 2.3, alpha = 0.6) + 
+  labs(title = "KKL clustering result") + 
+  scale_colour_rickandmorty() + 
+  theme_bw() 
+
+```
+
+## SessionInfo
+```{r sessionInfo}
+sessionInfo()
+```
+
+## References

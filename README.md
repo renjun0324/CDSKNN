@@ -46,5 +46,5 @@ result = data.frame(row.names = rownames(new_louvain$cluster_meta),
 # ARI result
 library(aricode)
 ARI(result$cluster, result$celltype)
-                               
+# 0.8486607                               
 ```

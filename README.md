@@ -36,9 +36,15 @@ new_louvain = NewLouvain(sampling_result = sampling_result,
                          outlier_kmeans = outlier_kmeans,
                          index = "Davies_Bouldin",
                          cores = 1)
+                       
 result = data.frame(row.names = rownames(new_louvain$cluster_meta),
                     name = rownames(new_louvain$cluster_meta),
+                    celltype = cellinfo$celltype,
                     cluster = as.factor(new_louvain$cluster_meta$cluster),
                     stringsAsFactors = FALSE)
+
+# ARI result
+library(aricode)
+ARI(result$cluster, result$celltype)
                                
 ```

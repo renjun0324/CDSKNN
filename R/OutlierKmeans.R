@@ -7,7 +7,7 @@
 #' @param dataMatrix row is cell, col is feature
 #' @param down_n downsampling number
 #' @param outlier_q the proportion of outliers that need to be removed
-#' @param cores parallel cores of outlier detection
+#' @param cores the number of threads
 #' @param seed random seed
 #'
 #' @return A list that include K-means result, division result, and center matrix was removed outliers
@@ -97,7 +97,7 @@ OutlierKmeans <- function(dataMatrix = NULL,
 #' @param m matrix, row is cells
 #' @param q the proportion of outliers you want to filter
 #' @param min_n the minimum number of cells required
-#' @param cores parallel cores
+#' @param cores the number of threads
 #'
 #' @return Character vector of outlier label
 #' @export

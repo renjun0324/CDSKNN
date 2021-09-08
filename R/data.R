@@ -1,11 +1,22 @@
 #'
 #' @Description
-#' count: a count matrix of a small test data set with 383 cells * 12870 genes
+#' a matrix of a small test data set with 2844 cells * 18877 genes
 #'
 #' @usage
 #' data(count)
 #'
 "count"
+
+#'
+#' @Description
+#'
+#' principal components analysis result of
+#' original count matrix
+#'
+#' @usage
+#' data(cellinfo)
+#'
+"pca_result"
 
 #'
 #' @Description

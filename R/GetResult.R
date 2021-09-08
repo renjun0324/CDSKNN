@@ -4,15 +4,19 @@
 #'
 #' This function is used to run Louvain clustering with optimal KNN graph structure
 #'
-#' @param dataset_r
-#' @param outlier_kmeans
+#' @param sampling_result sampling result from SamplingLouvain function
+#' @param outlier_kmeans outlier detection result from OutlierKmeans function
+#' @param assess_index evaluation index used to select the optimal KNN graph structure
+#' @param cores  the number of threads
 #'
 #' @export
 #'
 NewLouvain <- function(sampling_result = NULL,
                        outlier_kmeans = NULL,
-                       index = "Davies_Bouldin",
+                       assess_index = "Davies_Bouldin",
                        cores = 1){
+
+  index = assess_index
 
   int_best = sampling_result$int_best
   ds_kmeans = outlier_kmeans$ds_kmeans
@@ -52,7 +56,7 @@ NewLouvain <- function(sampling_result = NULL,
 #'
 #' @param orig_cluster clustering label of first time
 #' @param second_cluster clustering label of second time
-#' @param cores parallel cores
+#' @param cores  the number of threads
 #'
 #' @export
 #'

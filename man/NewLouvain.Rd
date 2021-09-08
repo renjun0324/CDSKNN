@@ -7,12 +7,12 @@
 NewLouvain(
   sampling_result = NULL,
   outlier_kmeans = NULL,
-  index = "Davies_Bouldin",
+  assess_index = "Davies_Bouldin",
   cores = 1
 )
 }
 \arguments{
-\item{outlier_kmeans}{}
+\item{cores}{parallel cores of outlier detection}
 }
 \description{
 This function is used to run Louvain clustering with optimal KNN graph structure

@@ -9,7 +9,7 @@ SamplingLouvain(
   outlier_kmeans = NULL,
   knn_range = c(3:70),
   iter = 30,
-  int_index = "Calinski_Harabasz",
+  compute_index = "Calinski_Harabasz",
   cores = 1,
   seed = NULL
 )
@@ -23,11 +23,11 @@ SamplingLouvain(
 
 \item{iter}{the number of iterations}
 
-\item{int_index}{the value of clustering quality index that need to be calculated}
-
 \item{cores}{the number of threads}
 
 \item{seed}{random seed}
+
+\item{int_index}{the value of clustering quality index that need to be calculated}
 }
 \description{
 This function is used to randomly sample each cluster multiple times

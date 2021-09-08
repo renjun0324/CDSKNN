@@ -8,7 +8,7 @@
 #' @param outlier_kmeans the result from OutlierKmeans function
 #' @param knn_range the range of the number of neighbors in the KNN graph structure
 #' @param iter the number of iterations
-#' @param int_index the value of clustering quality index that need to be calculated
+#' @param compute_index the value of clustering quality index that need to be calculated
 #' @param cores the number of threads
 #' @param seed random seed
 #'
@@ -30,10 +30,11 @@ SamplingLouvain <- function(dataMatrix = dataMatrix,
                             outlier_kmeans = NULL,
                             knn_range = c(3:70),
                             iter = 30,
-                            int_index = "Calinski_Harabasz",
+                            compute_index = "Calinski_Harabasz",
                             cores = 1,
                             seed = NULL){
 
+  int_index = compute_index
   knn_n = knn_range
   if(!is.null(seed)){
     set.seed(seed)
@@ -140,8 +141,8 @@ IntIndexCounting <- function(sampling_list = NULL){
 #'
 #' @param data row is cell, col is feature
 #' @param meta_data columns represent different clustering results
-#' @param methods index
-#' @param cores parallel cores
+#' @param methods internal index
+#' @param cores  the number of threads
 #'
 #' @export
 #'

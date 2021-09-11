@@ -11,9 +11,9 @@ FindBestCluster(data = NULL, meta_data = NULL, methods = c("all"), cores = 1)
 
 \item{meta_data}{columns represent different clustering results}
 
-\item{methods}{index}
+\item{methods}{internal index}
 
-\item{cores}{parallel cores}
+\item{cores}{the number of threads}
 }
 \description{
 Find best cluster result from internal indicators

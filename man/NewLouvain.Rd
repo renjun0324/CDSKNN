@@ -12,7 +12,13 @@ NewLouvain(
 )
 }
 \arguments{
-\item{cores}{parallel cores of outlier detection}
+\item{sampling_result}{sampling result from SamplingLouvain function}
+
+\item{outlier_kmeans}{outlier detection result from OutlierKmeans function}
+
+\item{assess_index}{evaluation index used to select the optimal KNN graph structure}
+
+\item{cores}{the number of threads}
 }
 \description{
 This function is used to run Louvain clustering with optimal KNN graph structure

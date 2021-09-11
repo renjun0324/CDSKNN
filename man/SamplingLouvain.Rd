@@ -23,11 +23,11 @@ SamplingLouvain(
 
 \item{iter}{the number of iterations}
 
+\item{compute_index}{the value of clustering quality index that need to be calculated}
+
 \item{cores}{the number of threads}
 
 \item{seed}{random seed}
-
-\item{int_index}{the value of clustering quality index that need to be calculated}
 }
 \description{
 This function is used to randomly sample each cluster multiple times

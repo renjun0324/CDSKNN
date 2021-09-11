@@ -11,7 +11,7 @@ GetMapClusterLabel(orig_cluster = NULL, second_cluster = NULL, cores = 1)
 
 \item{second_cluster}{clustering label of second time}
 
-\item{cores}{parallel cores}
+\item{cores}{the number of threads}
 }
 \description{
 Map the K-means results to all cells

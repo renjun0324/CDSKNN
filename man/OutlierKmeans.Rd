@@ -19,7 +19,7 @@ OutlierKmeans(
 
 \item{outlier_q}{the proportion of outliers that need to be removed}
 
-\item{cores}{parallel cores of outlier detection}
+\item{cores}{the number of threads}
 
 \item{seed}{random seed}
 }

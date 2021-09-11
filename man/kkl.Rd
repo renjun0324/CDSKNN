@@ -17,7 +17,23 @@ kkl(
 )
 }
 \arguments{
-\item{seed}{}
+\item{dataMatrix}{row is cell, col is feature}
+
+\item{outlier_q}{the proportion of outliers that need to be removed}
+
+\item{down_n}{downsampling number}
+
+\item{knn_range}{the range of the number of neighbors in the KNN graph structure}
+
+\item{iter}{the number of iterations}
+
+\item{compute_index}{the value of clustering quality index that need to be calculated}
+
+\item{assess_index}{evaluation index used to select the optimal KNN graph structure}
+
+\item{cores}{the number of threads}
+
+\item{seed}{random seed}
 }
 \description{
 This function is a wrapper that executes all steps of

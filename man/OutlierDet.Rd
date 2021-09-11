@@ -13,7 +13,7 @@ OutlierDet(m, q = 0.1, min_n = 3, cores = 1)
 
 \item{min_n}{the minimum number of cells required}
 
-\item{cores}{parallel cores}
+\item{cores}{the number of threads}
 }
 \value{
 Character vector of outlier label

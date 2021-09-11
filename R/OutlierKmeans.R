@@ -22,6 +22,9 @@ OutlierKmeans <- function(dataMatrix = NULL,
   cat("\n/// Kmeans with", down_n, "centers \n")
   set.seed(seed)
   ds_kmeans = kmeans(dataMatrix, centers = down_n, iter.max = 1000)
+  if(is.null(names(ds_kmeans$cluster))){
+    names(ds_kmeans$cluster) = rownames(dataMatrix)
+  }
   ds_kmeans_df = data.frame(row.names = names(ds_kmeans$cluster),
                             cellname =  names(ds_kmeans$cluster),
                             cluster = ds_kmeans$cluster,

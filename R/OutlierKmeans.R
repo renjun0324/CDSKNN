@@ -38,9 +38,9 @@ OutlierKmeans <- function(dataMatrix = NULL,
   ds_cluster_list = tapply(1:nrow(dataMatrix),
                            ds_kmeans$cluster,
                            function(x,y){
-                             cat(y,"\n")
+                             # cat(y,"\n")
                              if(length(x)==1){
-                               cat(y,"\n")
+                               # cat(y,"\n")
                                tmp = as.matrix(dataMatrix[x,])
                                # tmp = as.matrix(dataMatrix[x,])
                                rownames(tmp) = rownames(dataMatrix)[x]

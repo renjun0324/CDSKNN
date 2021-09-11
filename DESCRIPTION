@@ -1,7 +1,7 @@
 Package: KKLClustering
 Type: Package
 Title: Large-scale single-cell clustering algorithm based on K-means and optimal KNN graph structure
-Version: 0.2.6
+Version: 0.2.7
 Author: Ren Jun
 Maintainer: RenJun <renjun0324@hotmail.com>
 Description: In order to solve the problem that the clustering of large single-cell data sets is too slow and the number of clusters cannot be determined, the downsampling method based on K-means region division and the Louvain algorithm based on the optimal KNN graph structure are proposed.

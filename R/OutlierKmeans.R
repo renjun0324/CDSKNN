@@ -41,11 +41,8 @@ OutlierKmeans <- function(dataMatrix = NULL,
   ds_cluster_list = tapply(1:nrow(dataMatrix),
                            ds_kmeans$cluster,
                            function(x,y){
-                             # cat(y,"\n")
                              if(length(x)==1){
-                               # cat(y,"\n")
                                tmp = as.matrix(dataMatrix[x,])
-                               # tmp = as.matrix(dataMatrix[x,])
                                rownames(tmp) = rownames(dataMatrix)[x]
                                tmp
                              }else{ dataMatrix[x,] }})
@@ -125,29 +122,34 @@ OutlierDet <- function(m,
     m = as.matrix(m)
   }
 
-  if(nrow(m) <= min_n){
+  if(q==0){
     final = NULL
   }else{
-    m_m = colMeans(m)
-
-    if(cores == 1){
-      m2 = foreach(x = 1:nrow(m), .combine = 'rbind') %do% { colMeans(m[-x,]) - m_m }
-    }else if(cores < max_cores){
-      cl = makeCluster(cores)
-      registerDoParallel(cl)
-      m2 = foreach(x = 1:nrow(m), .combine = 'rbind') %dopar% { colMeans(m[-x,]) - m_m }
-      stopCluster(cl)
+    if(nrow(m) <= min_n){
+      final = NULL
     }else{
-      cat("exceed max cores, use cores = 1")
-      m2 = foreach(x = 1:nrow(m), .combine = 'rbind') %do% { colMeans(m[-x,]) - m_m }
+      m_m = colMeans(m)
+
+      if(cores == 1){
+        m2 = foreach(x = 1:nrow(m), .combine = 'rbind') %do% { colMeans(m[-x,]) - m_m }
+      }else if(cores < max_cores){
+        cl = makeCluster(cores)
+        registerDoParallel(cl)
+        m2 = foreach(x = 1:nrow(m), .combine = 'rbind') %dopar% { colMeans(m[-x,]) - m_m }
+        stopCluster(cl)
+      }else{
+        cat("exceed max cores, use cores = 1")
+        m2 = foreach(x = 1:nrow(m), .combine = 'rbind') %do% { colMeans(m[-x,]) - m_m }
+      }
+
+      m3 = rowMeans(m2^2)
+      max = quantile(m3, 1-q)
+      ind = which(m3 > max)
+
+      final = rownames(m)[ind]
     }
-
-    m3 = rowMeans(m2^2)
-    max = quantile(m3, 1-q)
-    ind = which(m3 > max)
-
-    final = rownames(m)[ind]
   }
+
 
   return(final)
 }

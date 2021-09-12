@@ -42,7 +42,8 @@ OutlierKmeans <- function(dataMatrix = NULL,
                            ds_kmeans$cluster,
                            function(x,y){
                              if(length(x)==1){
-                               tmp = as.matrix(dataMatrix[x,])
+                               # tmp = as.matrix(dataMatrix[x,])
+                               tmp = t(data.frame(dataMatrix[x,]))
                                rownames(tmp) = rownames(dataMatrix)[x]
                                tmp
                              }else{ dataMatrix[x,] }})

@@ -42,8 +42,13 @@ OutlierKmeans <- function(dataMatrix = NULL,
                            ds_kmeans$cluster,
                            function(x,y){
                              if(length(x)==1){
-                               # tmp = as.matrix(dataMatrix[x,])
-                               tmp = t(data.frame(dataMatrix[x,]))
+                               # cat(x,"\n")
+                               if(is.data.frame(dataMatrix)){
+                                 tmp = dataMatrix[x,]
+                               }
+                               if(is.matrix(dataMatrix)){
+                                 tmp = t(dataMatrix[x,])
+                               }
                                rownames(tmp) = rownames(dataMatrix)[x]
                                tmp
                              }else{ dataMatrix[x,] }})
@@ -61,10 +66,12 @@ OutlierKmeans <- function(dataMatrix = NULL,
                                keep = setdiff(rownames(ds_cluster_list[[j]]), outlier)
                                center = tryCatch({
                                  if(length(keep)==1){
+                                   cat("1")
                                    tt = data.frame(ds_cluster_list[[j]][keep,])
                                    colnames(tt) = keep
                                    tt = t(tt)
                                  }else{
+                                   cat("2")
                                    tt = data.frame(ds_cluster_list[[j]][keep,])
                                  }
                                  apply(tt, 2, mean)},

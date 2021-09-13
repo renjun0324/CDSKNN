@@ -56,7 +56,15 @@ kkl <- function(dataMatrix = NULL,
   result = list(outlier_kmeans = outlier_kmeans,
                 sampling_result = sampling_result,
                 new_louvain = new_louvain,
-                cluster_df = cluster_df)
+                cluster_df = cluster_df,
+                commands = paste0("outlier_q = ", outlier_q, " | ",
+                                  "down_n = ", down_n, " | ",
+                                  "knn_range = ", paste0(knn_range[1],"_",knn_range[2]), " | ",
+                                  "iter = ", iter, " | ",
+                                  "compute_index = ", paste(compute_index," "), " | ",
+                                  "assess_index = ", paste(assess_index," "), " | ",
+                                  "cores = ", cores, " | ",
+                                  "seed = ", seed) )
 
   return(result)
 

@@ -1,71 +1,161 @@
-#' KKL clustering
+#' CDSKNN clustering
 #'
 #' @description
 #'
 #' This function is a wrapper that executes all steps of
-#' KKL clustering analysis in one go.
+#' CDSKNN clustering analysis in one go.
 #'
-#' @param dataMatrix row is cell, col is feature
-#' @param outlier_q the proportion of outliers that need to be removed
-#' @param down_n downsampling number
+#' @param dat expression matrix, row is cell, col is feature
+#' @param partition_count the number of partitions
+#' @param batch_size the number of threads
+#' @param outlier_det whether running outlier detection
+#' @param outlier_methods outlier detection methods, md or ed.
+#' "md" utilizes the Mahalanobis distance for detection,
+#' while "ed" treats points that are far from the center proportionally as outliers.
+#' @param outlier_q the proportion of outliers you want to filter.
+#' When outlier_methods is ed, this parameter takes effect.
+#' @param min_n the minimum number of data points for outlier detection.
+#' @param num_init the proportion of outliers that need to be removed
+#' @param max_iters the maximum iterations for kmeans
+#'
 #' @param knn_range the range of the number of neighbors in the KNN graph structure
-#' @param iter the number of iterations
-#' @param compute_index the value of clustering quality index that need to be calculated
+#' @param cluster_method louvain or leiden in resampling
+#' @param resolution clustering parameters settings in resampling
+#' @param iter the number of iterations in resampling
+#' @param is_weight Whether to use distance weights when constructing the KNN graph
+#'
 #' @param assess_index evaluation index used to select the optimal KNN graph structure
-#' @param cores  the number of threads
+#' @param new_cluster_method louvain or leiden
+#' @param res_range resolution range in clustering
+
 #' @param seed random seed
 #'
 #' @export
 #'
-kkl <- function(dataMatrix = NULL,
-                outlier_q = 0.2,
-                down_n = 300,
-                knn_range = 5:70,
-                iter = 50,
-                compute_index =  c("Davies_Bouldin","Calinski_Harabasz"),
-                assess_index = "Davies_Bouldin",
-                cores = 1,
-                seed = 723){
+CDSKNN <- function(dat = NULL,
 
-  outlier_kmeans = OutlierKmeans(dataMatrix = dataMatrix,
-                                 outlier_q = outlier_q,
-                                 down_n = down_n,
-                                 cores = cores,
-                                 seed = seed)
+                   partition_count = 300,
+                   batch_size=500,
 
-  # random sampling and choose optmial KKN graph structure
-  sampling_result = SamplingLouvain(dataMatrix = dataMatrix,
-                                    outlier_kmeans = outlier_kmeans,
-                                    knn_range = knn_range,
-                                    iter = iter,
-                                    compute_index = compute_index,
-                                    cores = cores,
+                   outlier_det = TRUE,
+                   outlier_methods = "md",
+                   outlier_q = 0.2,
+                   min_n = 200,
+                   num_init = 10,
+                   max_iters = 1000,
+
+                   cluster_method = "louvain",
+                   resolution = 1,
+                   knn_range = c(3:10),
+                   iter = 20,
+                   is_weight = TRUE,
+
+                   assess_index = "Calinski_Harabasz",
+                   res_range = seq(0.2,3,0.2),
+                   new_cluster_method = "louvain",
+
+                   seed = 723){
+
+  # data("pca_result")
+  # dat = pca_result
+  # partition_count = 300
+  # batch_size=500
+  #
+  # outlier_det = TRUE
+  # outlier_methods = "md"
+  # outlier_q = 0.2
+  # min_n = 200
+  #
+  # num_init = 10
+  # max_iters = 1000
+  #
+  # cluster_method = "louvain"
+  # resolution = 1
+  # knn_range = c(3:50)
+  # iter = 50
+  # is_weight = TRUE
+  #
+  # assess_index = "Calinski_Harabasz"
+  # res_range = seq(0.2,3,0.2)
+  # new_cluster_method = "louvain"
+  #
+  # seed = 723
+  # cores = 1
+
+  cat("\n\n ///// 1) partitioning with outlier detection \n\n")
+
+  outlier_kmeans = pre_partitioning(dat = dat,
+
+                                    partition_count = partition_count,
+                                    batch_size = batch_size,
+
+                                    outlier_det = outlier_det,
+                                    outlier_methods = outlier_methods,
+                                    outlier_q = outlier_q,
+                                    min_n = min_n,
+
+                                    num_init = num_init,
+                                    max_iters = max_iters,
+
                                     seed = seed)
 
-  # get final clustering result
-  new_louvain = NewLouvain(sampling_result = sampling_result,
-                           outlier_kmeans = outlier_kmeans,
-                           assess_index = assess_index,
-                           cores = cores)
 
-  cluster_df = data.frame(row.names = rownames(new_louvain$cluster_meta),
-                          name = rownames(new_louvain$cluster_meta),
-                          cluster = as.factor(new_louvain$cluster_meta$cluster),
-                          stringsAsFactors = FALSE)
+  cat("\n\n ///// 2) Finding the optimal graph structure \n\n")
 
-  result = list(outlier_kmeans = outlier_kmeans,
-                sampling_result = sampling_result,
-                new_louvain = new_louvain,
-                cluster_df = cluster_df,
-                commands = paste0("outlier_q = ", outlier_q, " | ",
-                                  "down_n = ", down_n, " | ",
-                                  "knn_range = ", paste0(knn_range[1],"_",knn_range[2]), " | ",
-                                  "iter = ", iter, " | ",
-                                  "compute_index = ", paste(compute_index," "), " | ",
-                                  "assess_index = ", paste(assess_index," "), " | ",
-                                  "cores = ", cores, " | ",
-                                  "seed = ", seed) )
+  sampling_result = resampling(dat = dat,
+                               outlier_kmeans = outlier_kmeans,
+                               resolution = resolution,
+                               cluster_method = cluster_method,
+                               knn_range = knn_range,
+                               iter = iter,
+                               is_weight = is_weight,
+                               seed = seed)
 
+  cat("\n\n ///// 3) Finding the optimal resolution \n\n")
+
+  new_r = new_clustering(sampling_result = sampling_result,
+                         outlier_kmeans = outlier_kmeans,
+                         assess_index = assess_index,
+                         cluster_method = new_cluster_method,
+                         res_range = res_range,
+                         is_weight = is_weight,
+                         seed = seed)
+
+  result <- list(outlier_kmeans = outlier_kmeans,
+                 sampling_result = sampling_result[-1],
+                 cluster_result = new_r)
+
+  command = GetCommand()
+  command$params = command$params[-1]
+  result$command = command
   return(result)
 
+}
+
+
+#' GetCommand
+#'
+#' @noRd
+#'
+GetCommand <- function(){
+  time.stamp <- Sys.time()
+  command.name = sys.calls()[[1]]
+  command.name = strsplit(as.character(command.name[[1]]),"\\(")[[1]]
+
+  argnames <- argnames <- names(x = formals(fun = sys.function(which = sys.parent(n = 1))))
+  params <- list()
+  p.env <- parent.frame(n = 1)
+  argnames <- intersect(x = argnames, y = ls(name = p.env))
+  # argnames <- setdiff(argnames, c("mamba","murp","metadata","object"))
+  for (arg in argnames) {
+    param_value <- get(x = arg, envir = p.env)
+    # if (inherits(x = param_value)) {
+    #   next
+    # }
+    params[[arg]] <- param_value
+  }
+
+  # p = list(name = command.name, time.stamp = time.stamp, argnames = argnames, params = params)
+  p = list(name = command.name, time.stamp = time.stamp, params = params)
+  return(p)
 }

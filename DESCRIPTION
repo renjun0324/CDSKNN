@@ -4,6 +4,8 @@ Title: Large-scale single-cell clustering algorithm based on optimal KNN graph s
 Version: 0.4
 Author: Ren Jun
 Maintainer: RenJun <renjun0324@hotmail.com>
+Description: A novel single cell clustering framework that combines the partition-based clustering algorithm 
+            with community detection method, aiming to discover cell types by constructing the most stable graph structure
 License: GPL-3
 Depends:
     R (>= 3.5.0),

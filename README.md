@@ -1,4 +1,4 @@
-# KKL Clustering
+# CDSKNN Clustering 
 
 Large-scale single-cell clustering algorithm based on K-means and optimal KNN graph structure
 
@@ -64,5 +64,4 @@ result = data.frame(row.names = rownames(new_louvain$cluster_meta),
 # ARI result
 library(aricode)
 ARI(result$cluster_df[rownames(cellinfo),"cluster"],cellinfo$celltype)
-# 0.8486607                               
 ```

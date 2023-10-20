@@ -6,7 +6,7 @@ Large-scale single-cell clustering algorithm based on K-means and optimal KNN gr
 
 ```r
 install.packages("devtools")
-devtools::install_github("renjun0324/KKLClustering")
+devtools::install_github("renjun0324/CDSKNN")
 ```
 
 ## Quick Start
@@ -15,7 +15,7 @@ devtools::install_github("renjun0324/KKLClustering")
 data(pca_result)
 data(cellinfo)
 
-result = kkl(pca_result,
+result = CDSKNN(pca_result,
              outlier_q = 0.1,
              down_n = 300,
              knn_range = 5:70,
@@ -63,6 +63,6 @@ result = data.frame(row.names = rownames(new_louvain$cluster_meta),
 
 # ARI result
 library(aricode)
-ARI(result$cluster, result$celltype)
+ARI(result$cluster_df[rownames(cellinfo),"cluster"],cellinfo$celltype)
 # 0.8486607                               
 ```

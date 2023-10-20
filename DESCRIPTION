@@ -1,10 +1,9 @@
-Package: KKLClustering
+Package: CDSKNN
 Type: Package
-Title: Large-scale single-cell clustering algorithm based on K-means and optimal KNN graph structure
-Version: 0.3.1
+Title: Large-scale single-cell clustering algorithm based on optimal KNN graph structure
+Version: 0.4
 Author: Ren Jun
 Maintainer: RenJun <renjun0324@hotmail.com>
-Description: In order to solve the problem that the clustering of large single-cell data sets is too slow and the number of clusters cannot be determined, the downsampling method based on K-means region division and the Louvain algorithm based on the optimal KNN graph structure are proposed.
 License: GPL-3
 Depends:
     R (>= 3.5.0),
@@ -15,20 +14,19 @@ Depends:
     clusterCrit,
     igraph,
     stringr,
+    mbkmeans,
+    pbapply,
+    reticulate,
+    clustAnalytics,
     doParallel
 Imports:
     methods, 
+    pbapply,
     graphics, 
     grid, 
     utils, 
     lattice,
-    stats,
-    Seurat,
-    data.table,
-    dbscan,
-    reshape2,
-    matrixStats,
-    ggsci
+    stats
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1

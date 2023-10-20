@@ -11,6 +11,7 @@
 #'
 #' @export
 #'
+
 NewLouvain <- function(sampling_result = NULL,
                        outlier_kmeans = NULL,
                        assess_index = "Davies_Bouldin",

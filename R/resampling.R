@@ -1,4 +1,5 @@
 
+
 #' Random sampling to do KNN-Louvain/leiden clustering
 #'
 #' @description
@@ -35,6 +36,7 @@ resampling <- function(dat = dat,
                        resolution = 1,
                        iter = 30,
                        is_weight = TRUE,
+                       python_path = "/usr/bin/python3",
                        seed = 723){
 
   cluster_df = outlier_kmeans$cluster_df
@@ -62,7 +64,7 @@ resampling <- function(dat = dat,
     # 2). -- knn
     g_list = lapply(knn_range, function(k){
       # cat(k, "\n")
-      g = CreateKNN(sample_centers, k, is_weight = TRUE)
+      g = CreateKNN(sample_centers, k, is_weight = TRUE, python_path = python_path)
       return(g)
     })
     names(g_list) = paste0("k",knn_range)

@@ -32,7 +32,7 @@
 #'
 #' @export
 #'
-CDSKNN <- function(dat = NULL,
+cdsknn <- function(dat = NULL,
 
                    partition_count = 300,
                    batch_size=500,

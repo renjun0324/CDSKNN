@@ -79,6 +79,7 @@ FindBestCluster <- function(data = NULL,
 
 }
 
+
 #' Louvain/leiden clustering with optimal KNN structure
 #'
 #' @description

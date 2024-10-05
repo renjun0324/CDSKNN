@@ -21,7 +21,7 @@ data(cellinfo)
 
 result = cdsknn(dat = pca, 
                 partition_count = 300, 
-                batch_size = 500,
+                batch_size = 200,
                 num_init = 10,
                 max_iters = 100,
                 outlier_det = TRUE,
@@ -30,11 +30,11 @@ result = cdsknn(dat = pca,
                 min_n = 200,
                 cluster_method = "louvain",
                 resolution = 1,
-                knn_range = c(3:50), 
-                iter = 50,
+                knn_range = c(3:10), 
+                iter = 20,
                 is_weight = TRUE,
                 assess_index = "Calinski_Harabasz", 
-                res_range = seq(0.2, 3, 0.1),
+                res_range = seq(0.2, 2, 0.2),
                 new_cluster_method = "louvain",
                 python_path = "/usr/bin/python3",
                 seed = 723)
@@ -42,30 +42,30 @@ result = cdsknn(dat = pca,
 
 # ARI result
 library(aricode)
-ARI(result$cluster_result$cluster[rownames(cellinfo)],cellinfo$celltype)
+ARI(result$cluster_result$cluster[rownames(water)],water$true_cluster)
 ```
 
 ## Steps
 
 ```r
 # outlier detect
-outlier_kmeans = pre_partitioning(dat = pca_result,
+outlier_kmeans = pre_partitioning(dat = pca,
                                   partition_count = 300,
-                                  batch_size = 300,
+                                  batch_size = 200,
                                   outlier_det = T,
                                   outlier_methods = "md",
                                   outlier_q = 0.2,
                                   min_n = 200,
                                   num_init = 10,
-                                  max_iters = 10,
+                                  max_iters = 100,
                                   seed = 723)
       
 # random sampling and choose optmial KKN graph structure                      
-sampling_result = resampling(dat = pca_result, 
+sampling_result = resampling(dat = pca, 
                              outlier_kmeans = outlier_kmeans, 
                              resolution = 1, 
                              cluster_method = "louvain", 
-                             knn_range = c(3:20), 
+                             knn_range = c(3:10), 
                              iter = 20, 
                              is_weight = TRUE, 
                              python_path = "/usr/bin/python3",
@@ -76,9 +76,9 @@ new_r = new_clustering(sampling_result = sampling_result,
                        outlier_kmeans = outlier_kmeans,
                        assess_index = "Calinski_Harabasz",
                        cluster_method = "louvain",
-                       res_range = seq(0.2, 2, 0.1),
+                       res_range = seq(0.2, 2, 0.2),
                        is_weight = TRUE,
-                       python_path = "/usr/bin/python3",
+                       # python_path = "/usr/bin/python3",
                        seed = 723)
                        
 result <- list(outlier_kmeans = outlier_kmeans,
@@ -87,5 +87,43 @@ result <- list(outlier_kmeans = outlier_kmeans,
 
 # ARI result
 library(aricode)
-ARI(result$cluster_result$cluster[rownames(cellinfo)],cellinfo$celltype)
+ARI(result$cluster_result$cluster[rownames(water)],water$true_cluster)
+```
+
+## Plots
+
+```r
+
+library(ggplot2)
+library(ggsci)
+library(patchwork)
+
+umap = umap::umap(pca)
+df = data.frame(umap$layout,
+                cluster = result$cluster_result$cluster[rownames(water)],
+                true_cluster = water$true_cluster)
+df$cluster = as.factor(df$cluster)
+
+p1 <- ggplot(df, aes(x = X1, y = X2, color = cluster)) +
+  geom_point(size = 1.2, alpha = 0.5) +
+  scale_color_d3("category20") +
+  labs(x = "UMAP-1", y = "UMAP-2", title = "CDSKNN Clustering", color = "") +
+  theme(panel.background = element_rect(fill='transparent', color="black"),
+        legend.key = element_rect(fill = "white"),
+        panel.grid.minor=element_blank(),
+        panel.grid.major=element_blank(),
+        legend.key.size = unit(0.4, "cm") )
+
+p2 <- ggplot(df, aes(x = X1, y = X2, color = true_cluster)) +
+  geom_point(size = 1.2, alpha = 0.5) +
+  scale_color_d3("category20") +
+  labs(x = "UMAP-1", y = "UMAP-2", title = "True Cluster", color = "") +
+  theme(panel.background = element_rect(fill='transparent', color="black"),
+        legend.key = element_rect(fill = "white"),
+        panel.grid.minor=element_blank(),
+        panel.grid.major=element_blank(),
+        legend.key.size = unit(0.4, "cm") )
+        
+p = p1 + p2
+ggsave("umap.png", p, width = 8, height = 3)
 ```

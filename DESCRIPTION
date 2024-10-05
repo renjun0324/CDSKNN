@@ -1,7 +1,7 @@
 Package: CDSKNN
 Type: Package
 Title: Large-scale single-cell clustering algorithm based on optimal KNN graph structure
-Version: 0.5
+Version: 0.5.1
 Author: Ren Jun
 Maintainer: RenJun <renjun0324@hotmail.com>
 Description: A novel single cell clustering framework that combines the partition-based clustering algorithm 

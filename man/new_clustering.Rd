@@ -11,6 +11,7 @@ new_clustering(
   cluster_method = "louvain",
   res_range = seq(0.2, 3, 0.2),
   is_weight = TRUE,
+  python_path = "/usr/bin/python3",
   seed = 723
 )
 }
@@ -24,6 +25,8 @@ new_clustering(
 \item{cluster_method}{louvain or leiden}
 
 \item{res_range}{resolution range in clustering}
+
+\item{python_path}{python path to be used}
 
 \item{seed}{random seed}
 }

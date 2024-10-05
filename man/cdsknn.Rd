@@ -22,6 +22,7 @@ cdsknn(
   assess_index = "Calinski_Harabasz",
   res_range = seq(0.2, 3, 0.2),
   new_cluster_method = "louvain",
+  python_path = "/usr/bin/python3",
   seed = 723
 )
 }
@@ -62,6 +63,8 @@ When outlier_methods is ed, this parameter takes effect.}
 \item{res_range}{resolution range in clustering}
 
 \item{new_cluster_method}{louvain or leiden}
+
+\item{python_path}{python path to be used}
 
 \item{seed}{random seed}
 }

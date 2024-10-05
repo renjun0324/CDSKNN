@@ -19,23 +19,24 @@ devtools::install_github("renjun0324/CDSKNN")
 data(pca_result)
 data(cellinfo)
 
-result = cdsknn(dat = pca_result, 
-                partition_count = 200, 
+result = cdsknn(dat = pca, 
+                partition_count = 300, 
                 batch_size = 500,
                 num_init = 10,
-                max_iters = 10,
+                max_iters = 100,
                 outlier_det = TRUE,
                 outlier_methods = "md",
                 outlier_q = 0.2, 
                 min_n = 200,
                 cluster_method = "louvain",
                 resolution = 1,
-                knn_range = c(3:20), 
+                knn_range = c(3:50), 
                 iter = 50,
                 is_weight = TRUE,
                 assess_index = "Calinski_Harabasz", 
-                res_range = seq(0.2, 2, 0.1),
+                res_range = seq(0.2, 3, 0.1),
                 new_cluster_method = "louvain",
+                python_path = "/usr/bin/python3",
                 seed = 723)
 
 
@@ -67,6 +68,7 @@ sampling_result = resampling(dat = pca_result,
                              knn_range = c(3:20), 
                              iter = 20, 
                              is_weight = TRUE, 
+                             python_path = "/usr/bin/python3",
                              seed = 723)
                                   
 # get final clustering result                                 
@@ -76,6 +78,7 @@ new_r = new_clustering(sampling_result = sampling_result,
                        cluster_method = "louvain",
                        res_range = seq(0.2, 2, 0.1),
                        is_weight = TRUE,
+                       python_path = "/usr/bin/python3",
                        seed = 723)
                        
 result <- list(outlier_kmeans = outlier_kmeans,

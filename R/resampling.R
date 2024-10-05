@@ -13,6 +13,7 @@
 #' @param resolution clustering parameters settings in resampling
 #' @param iter the number of iterations in resampling
 #' @param is_weight Whether to use distance weights when constructing the KNN graph
+#' @param python_path which python
 #' @param seed random seed
 #'
 #' @details The currently available indices are:

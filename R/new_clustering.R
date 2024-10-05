@@ -90,6 +90,7 @@ FindBestCluster <- function(data = NULL,
 #' @param assess_index evaluation index used to select the optimal KNN graph structure
 #' @param cluster_method louvain or leiden
 #' @param res_range resolution range in clustering
+#' @param python_path python path to be used
 #' @param seed random seed
 #'
 #' @export
@@ -100,6 +101,7 @@ new_clustering <- function(sampling_result = NULL,
                            cluster_method = "louvain",
                            res_range = seq(0.2,3,0.2),
                            is_weight = TRUE,
+                           python_path = "/usr/bin/python3",
                            seed = 723){
 
   kmeans_result = outlier_kmeans$kmeans_result
@@ -141,7 +143,7 @@ new_clustering <- function(sampling_result = NULL,
   best_res = res_range[which.max(ch_means)]
 
   #######################  3. best cluster
-  g = CreateKNN(kmeans_result$centers, best_k, is_weight = is_weight)
+  g = CreateKNN(kmeans_result$centers, best_k, is_weight = is_weight, python_path = python_path)
   if(cluster_method == "louvain"){
     set.seed(seed)
     best_cluster = cluster_louvain(g, weights = E(g)$weight, resolution = best_res)$membership

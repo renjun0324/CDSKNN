@@ -27,7 +27,7 @@
 #' @param assess_index evaluation index used to select the optimal KNN graph structure
 #' @param new_cluster_method louvain or leiden
 #' @param res_range resolution range in clustering
-
+#' @param python_path python path to be used
 #' @param seed random seed
 #'
 #' @export
@@ -53,7 +53,7 @@ cdsknn <- function(dat = NULL,
                    assess_index = "Calinski_Harabasz",
                    res_range = seq(0.2,3,0.2),
                    new_cluster_method = "louvain",
-
+                   python_path = "/usr/bin/python3",
                    seed = 723){
 
   # data("pca_result")
@@ -109,6 +109,7 @@ cdsknn <- function(dat = NULL,
                                knn_range = knn_range,
                                iter = iter,
                                is_weight = is_weight,
+                               python_path = "/usr/bin/python3",
                                seed = seed)
 
   cat("\n\n ///// 3) Finding the optimal resolution \n\n")

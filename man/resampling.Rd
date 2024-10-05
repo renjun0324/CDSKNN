@@ -31,6 +31,8 @@ resampling(
 
 \item{is_weight}{Whether to use distance weights when constructing the KNN graph}
 
+\item{python_path}{which python}
+
 \item{seed}{random seed}
 }
 \description{

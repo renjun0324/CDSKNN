@@ -1,11 +1,3 @@
-#'
-#' @Description
-#' a matrix of a small test data set with 2844 cells * 18877 genes
-#'
-#' @usage
-#' data(count)
-#'
-"count"
 
 #'
 #' @Description
@@ -14,9 +6,9 @@
 #' original count matrix
 #'
 #' @usage
-#' data(cellinfo)
+#' data(pca)
 #'
-"pca_result"
+"pca"
 
 #'
 #' @Description
@@ -24,6 +16,6 @@
 #' celltype label
 #'
 #' @usage
-#' data(cellinfo)
+#' data(water)
 #'
-"cellinfo"
+"water"
